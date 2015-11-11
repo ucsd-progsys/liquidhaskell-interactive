@@ -1,4 +1,7 @@
 
+import Types
 
 main :: IO ()
-main = putStrLn "Hello, world!"
+main = do
+  cmd <- getCommand
+  putStrLn $ "Whats that? " ++ show cmd

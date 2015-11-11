@@ -17,16 +17,10 @@
 
 We must learn to crawl.
 
-`lhi` sets up a server that takes two commands:
-
-**Get** Which returns the *current* value (initially `0`)
-
-```
-$ lhi get
-```
-
-**Set** Which *updates* the current value
+`lhi` sets up a server that takes two commands, which `get` and `set`
+the value of a given `String` key:
 
 ```
-$ lhi set 10
+$ lhi get --key=cat
+$ lhi set --key=cat --val=10
 ```

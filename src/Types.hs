@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric      #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 
-module Language.Haskell.Liquid.Server.Types
+module Types
   (
 
     -- * Commands
