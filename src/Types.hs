@@ -3,42 +3,50 @@
 
 module Types
   (
-
     -- * Commands
     Command (..)
 
+    -- * Response
+  , Response (..)
+
     -- * Extract Command
-  , getCommand
+  , command
   ) where
 
+-- import Data.ByteString.Char8 ( ByteString )
+import Data.Serialize        ( Serialize )
 import GHC.Generics
 import System.Console.CmdArgs
+import qualified Data.HashMap.Strict as M
 
--- import           System.Console.CmdArgs     hiding  (Loud)
--- import System.Console.CmdArgs.Explicit (modeValue)
--- import Control.Monad (foldM)
--- import System.Environment (withArgs)
+data Command = Put { key :: String
+                   , val :: String
+                   }
+             | Get { key :: String
+                   }
+               deriving ( Generic, Data, Typeable, Show )
 
-data Command = Get { key :: String
-                   }
-             | Set { key :: String
-                   , val :: Int
-                   }
-             deriving (Eq, Data, Typeable, Show, Generic)
+instance Serialize Command
+
+data Response = Failed String
+              | Value  String
+               deriving ( Generic, Data, Typeable, Show )
+
+instance Serialize Response
 
 ---------------------------------------------------------------------------------
 -- | Parsing Command Line -------------------------------------------------------
 ---------------------------------------------------------------------------------
-getCommand :: IO Command
+command :: IO Command
 -------------------------------------------------------------------------------
-getCommand = cmdArgs config
+command = cmdArgs config
 
 cGet :: Command
 cGet = Get { key = def   &= help "Key to lookup"
            } &= help    "Return value of given key"
 
 cSet :: Command
-cSet = Set { key = def   &= help "Key to update"
+cSet = Put { key = def   &= help "Key to update"
            , val = def   &= help "New value to update key to"
            } &= help    "Update value of given key"
 
