@@ -3,3 +3,6 @@ packages:
 - '.'
 extra-deps: []
 resolver: nightly-2015-09-24
+
+extra-deps:
+- daemons-0.2.1
