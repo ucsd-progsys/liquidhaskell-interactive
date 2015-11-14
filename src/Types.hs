@@ -11,7 +11,6 @@ module Types
 
     -- * State
   , State (..)
-  , initState
 
     -- * Extract Command
   , command
@@ -30,10 +29,6 @@ import qualified Data.HashMap.Strict as M
 -------------------------------------------------------------------------------
 
 data State = State { table :: M.HashMap String String }
-
-initState :: State
-initState = State M.empty
-
 
 -------------------------------------------------------------------------------
 -- | Command ------------------------------------------------------------------

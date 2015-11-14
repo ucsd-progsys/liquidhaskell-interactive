@@ -12,27 +12,36 @@
 
 ## Interactive Proofs (and Synthesis)
 
+## Framework
 
-## TODO
+To create your own server, simply provide implementations of the above, and:
 
-We must learn to crawl.
+_Types_
 
-`lhi` sets up a server that takes two commands, which `get` and `set`
-the value of a given `String` key:
++ `Types.Command`
++ `Types.Response`
++ `Types.State`
+
+_Code_
+
++ `Handler.init`
++ `Handler.handler`
+
 
 ```
 $ lhi get --key=cat
-$ lhi set --key=cat --val=10
+Daemon started on port 7856
+Just (Failed "not found")
+$ lhi put --key=cat --val=garfield
+Just (Value "Ok!")
+$ lhi get --key=cat
+Just (Value "garfield")
+$ lhi get --key=dog
+Just (Failed "not found")
+$ lhi put --key=dog --val=fido
+Just (Value "Ok!")
+$ lhi get --key=cat
+Just (Value "garfield")
+$ lhi get --key=dog
+Just (Value "fido")
 ```
-
-
-**HEREHEREHEREHERE**
-
-1. figure out how hdevtools uses a socket to do the comms.
-
-   hardwire socket at "/Users/rjhala/tmp/.lhi.sock"
-
-2. then what?
-     if server exists then query it ...
-                      else create server
-                           query it ...

@@ -1,14 +1,13 @@
-module Handler (handler) where
+module Handler (init, handler) where
 
+import Prelude hiding (init)
 import Types
-
-import Control.Concurrent.MVar -- ( MVar, modifyMVar, readMVar )
+import Control.Concurrent.MVar
 import Data.HashMap.Strict as M
 
 ------------------------------------------------------------------------------
 handler :: MVar State -> Command -> IO Response
 ------------------------------------------------------------------------------
-
 handler r (Get k _) = do
     t <- table <$> readMVar r
     return $ maybe err Value $ M.lookup k t
@@ -18,3 +17,8 @@ handler r (Get k _) = do
 handler r (Put k v _) = do
   modifyMVar_ r $ \st -> return st { table = M.insert k v (table st) }
   return      $  Value "Ok!"
+
+------------------------------------------------------------------------------
+init :: State
+------------------------------------------------------------------------------
+init = State M.empty
