@@ -9,8 +9,14 @@ module Types
     -- * Response
   , Response (..)
 
+    -- * State
+  , State (..)
+  , initState
+
     -- * Extract Command
   , command
+
+    -- * Init State
   ) where
 
 -- import Data.ByteString.Char8 ( ByteString )
@@ -19,14 +25,34 @@ import GHC.Generics
 import System.Console.CmdArgs
 import qualified Data.HashMap.Strict as M
 
-data Command = Put { key :: String
-                   , val :: String
+-------------------------------------------------------------------------------
+-- | State --------------------------------------------------------------------
+-------------------------------------------------------------------------------
+
+data State = State { table :: M.HashMap String String }
+
+initState :: State
+initState = State M.empty
+
+
+-------------------------------------------------------------------------------
+-- | Command ------------------------------------------------------------------
+-------------------------------------------------------------------------------
+
+data Command = Put { key  :: String
+                   , val  :: String
+                   , port :: Int
                    }
-             | Get { key :: String
+             | Get { key  :: String
+                   , port :: Int
                    }
                deriving ( Generic, Data, Typeable, Show )
 
 instance Serialize Command
+
+-------------------------------------------------------------------------------
+-- | Response -----------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 data Response = Failed String
               | Value  String
@@ -42,12 +68,14 @@ command :: IO Command
 command = cmdArgs config
 
 cGet :: Command
-cGet = Get { key = def   &= help "Key to lookup"
+cGet = Get { key  = def    &= help "Key to lookup"
+           , port = 7856   &= help "Port at which to listen"
            } &= help    "Return value of given key"
 
 cSet :: Command
-cSet = Put { key = def   &= help "Key to update"
-           , val = def   &= help "New value to update key to"
+cSet = Put { key = def     &= help "Key to update"
+           , val = def     &= help "New value to update key to"
+           , port = 7856   &= help "Port at which to listen"
            } &= help    "Update value of given key"
 
 config :: Command

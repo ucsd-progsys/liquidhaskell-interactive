@@ -3,51 +3,29 @@
 
 module Main where
 
-import Control.Concurrent.MVar ( MVar, newMVar, modifyMVar )
-import Data.Default ( def )
-import Data.Serialize ( Serialize )
-import Data.String ( fromString )
-import GHC.Generics
-import System.Environment ( getArgs )
 import System.Daemon
+import Control.Concurrent.MVar ( newMVar )
+import Data.Default ( def )
+import Types
+import Handler
 
-handleCommand :: MVar Book -> Command -> IO Response
-handleCommand bookVar comm = modifyMVar bookVar $ \book -> return $
-    case comm of
-      Get key -> ( book
-                 , maybe (Failed "not found") Value (M.lookup key book) )
-      Put key value -> ( M.insert key value book
-                       , Value "ok" )
-
+daemonName :: String
+daemonName = "lhi"
 
 main :: IO ()
 main = do
-    bookVar <- newMVar M.empty
-    let options = def { daemonPort = 7856 }
-    ensureDaemonRunning "memo" options (handleCommand bookVar)
-    args <- getArgs
-    let args' = map fromString args
-    res <- case args' of
-      ["get", key]        -> runClient "localhost"  7856 (Get key)
-      ["put", key, value] -> runClient "localhost"  7856 (Put key value)
-      _                   -> error "invalid command"
-    print (res :: Maybe Response)
+  st  <- newMVar initState
+  cmd <- command
+  ensureDaemonRunning daemonName (options cmd) (handler st)
+  res <- client cmd
+  print res
 
-{-
-main :: IO ()
-main = do
-    bookVar <- newMVar M.empty
-    let options = def { daemonPort = 7856 }
-    ensureDaemonRunning "memo" options (handleCommand bookVar)
-    args <- getArgs
-    let args' = map fromString args
-    res <- case args' of
-      ["get", key]        -> runClient "localhost"  7856 (Get key)
-      ["put", key, value] -> runClient "localhost"  7856 (Put key value)
-      _                   -> error "invalid command"
-    print (res :: Maybe Response)
+options :: Command -> DaemonOptions
+options cmd = def { daemonPort = port cmd }
 
--}
+client :: Command -> IO (Maybe Response)
+client cmd = runClient "localhost" (port cmd) cmd
+
 
 {-
 % dist/build/memo/memo get apples
